@@ -1,4 +1,8 @@
+using JwtAuthentication.Data;
+using JwtAuthentication.Service;
 using JwtAuthentication.ServiceExtensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +13,21 @@ builder.Services.AddJWTAuthentication();
 builder.Services.AddCorsSupport();
 
 builder.Services.AddControllers();
+
+
+builder.Services.AddDbContext<UserContext>(options =>
+{
+    // sql lite database
+    options.UseSqlite(
+        builder.Configuration["ConnectionString:UserDBConnectionString"]);
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<ITokenService, TokenService>();
+
 
 
 var app = builder.Build();
